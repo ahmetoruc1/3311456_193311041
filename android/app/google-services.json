@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1093695342864",
+    "project_id": "enfes-lezzetler",
+    "storage_bucket": "enfes-lezzetler.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1093695342864:android:22243bbfea534799813d95",
+        "android_client_info": {
+          "package_name": "com.example.enfes_lezzetler"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1093695342864-q135do18ag4p0empe0tfau6big9n2tm2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO7d8cQw3C-1TtZoZ5lLyr7S5G2BfBCss"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1093695342864-q135do18ag4p0empe0tfau6big9n2tm2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
