@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enfes_lezzetler/models/gonderi.dart';
 import 'package:enfes_lezzetler/models/kullanici.dart';
 
 class FirestoreServisi{
@@ -40,5 +41,24 @@ class FirestoreServisi{
   Future<int>takipEdilenSayisi(kullaniciId)async {
     QuerySnapshot snapshot=await _firestore.collection("takipedilenler").doc(kullaniciId).collection("KullanicininTakipleri").get();
     return snapshot.docs.length;
+  }
+
+  Future<void>gonderiOlustur({gonderiResmiUrl,aciklama,yayinlayanId,tarif}) async {
+    print("hata  1");
+    await _firestore.collection("gonderiler").doc(yayinlayanId).collection("KullaniciGonderileri").add({
+      "gonderiResmiUrl":gonderiResmiUrl,
+      "aciklama":aciklama,
+      "yayinlayanId":yayinlayanId,
+      "tarif":tarif,
+      "begeniSayisi":0,
+      "oluşturulmaZamanı":zaman
+    });
+    print("Hata  2");
+  }
+  Future<List<Gonderi>>gonderiGetir(kullaniciId)async {
+    QuerySnapshot snapshot =await _firestore.collection("gonderiler").doc(kullaniciId).collection("KullaniciGonderileri").orderBy("oluşturulmaZamanı",descending: true).get();
+    //en son yüklenen gönderinin ilk başta gelmesi için olduşturma zamanının azlamasına bağlı olarak listelenmesini sağladım.
+    List<Gonderi>gonderiler=snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
+    return gonderiler;
   }
 }

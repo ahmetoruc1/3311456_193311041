@@ -5,11 +5,11 @@ class Gonderi{
   final String gonderiResmiUrl;
   final String aciklama;
   final String yayinlayanId;
-  final String begeniSayisi;
-  final String konum;
+  final int begeniSayisi;
+  final String tarif;
 
   Gonderi({required this.id, required this.gonderiResmiUrl, required this.aciklama,
-    required this.yayinlayanId, required this.begeniSayisi, required this.konum});
+    required this.yayinlayanId, required this.begeniSayisi, required this.tarif});
 
 
   factory Gonderi.dokumandanUret(DocumentSnapshot doc) {
@@ -20,7 +20,7 @@ class Gonderi{
       aciklama: doc["aciklama"],
       yayinlayanId: doc["yayinlayanId"],
       begeniSayisi: doc["begeniSayisi"],
-      konum: doc["konum"]
+      tarif: doc["tarif"]
     );
   }
 

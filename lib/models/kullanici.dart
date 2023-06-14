@@ -45,9 +45,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class Kullanici {
   final String id;
-  final String kullaniciAdi;
-  final String fotoUrl;
-  final String email;
+  final String? kullaniciAdi;
+  final String? fotoUrl;
+  final String? email;
   final String? hakkinda;
 
 
