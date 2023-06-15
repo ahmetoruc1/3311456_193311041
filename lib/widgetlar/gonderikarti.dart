@@ -1,5 +1,9 @@
 import 'package:enfes_lezzetler/models/kullanici.dart';
+import 'package:enfes_lezzetler/pages/yorumlar.dart';
+import 'package:enfes_lezzetler/services/firestoreServisi.dart';
+import 'package:enfes_lezzetler/services/yetkilendirmeservisi.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/gonderi.dart';
 
@@ -17,11 +21,23 @@ class GonderiKarti extends StatefulWidget {
 class _GonderiKartiState extends State<GonderiKarti> {
   int _begeniSayisi=0;
   bool _begendin=false;
+  String _aktifKullaniciId="";
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _begeniSayisi=widget.gonderi.begeniSayisi;
+    _aktifKullaniciId=Provider.of<YetkilendirmeServisi>(context,listen: false).aktifKullanici;
+    begeniVarMi();
+  }
+  begeniVarMi()async {
+    bool begenivarmi=await FirestoreServisi().begeniVarmi(widget.gonderi, _aktifKullaniciId);
+    if(begenivarmi){
+      setState(() {
+        _begendin=true;
+        //begeni varsa beğeni ikonu kırmızı kalp şekilde olacak
+      });
+    }
   }
 
   @override
@@ -60,11 +76,14 @@ class _GonderiKartiState extends State<GonderiKarti> {
     }
 
     Widget _gonderiResmi(){
-    return Image.network(
-      widget.gonderi.gonderiResmiUrl,
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.width,
-      fit: BoxFit.cover,
+    return GestureDetector(
+      onDoubleTap: _begeniDegistir,
+      child: Image.network(
+        widget.gonderi.gonderiResmiUrl,
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.width,
+        fit: BoxFit.cover,
+      ),
     );
     }
 
@@ -79,7 +98,10 @@ class _GonderiKartiState extends State<GonderiKarti> {
               onPressed: _begeniDegistir,
               icon: !_begendin ? Icon(Icons.favorite_border,size: 30.0) :Icon(Icons.favorite,size: 30.0,color: Colors.red,)
           ),
-          IconButton(onPressed: null, icon: Icon(Icons.comment,size: 30.0)),
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Yorumlar(gonderi: widget.gonderi),));
+          },
+              icon: Icon(Icons.comment,size: 30.0)),
         ],
       ),
         Padding(
@@ -113,6 +135,7 @@ class _GonderiKartiState extends State<GonderiKarti> {
         _begendin=false;
         _begeniSayisi=_begeniSayisi -1;
       });
+      FirestoreServisi().gonderiBegeniKaldir(widget.gonderi,_aktifKullaniciId);
 
     }else{
       //Kullanıcı gönderiyi beğenmemiş,beğeniyi ekleyecek kodlar
@@ -121,6 +144,7 @@ class _GonderiKartiState extends State<GonderiKarti> {
         _begendin=true;
         _begeniSayisi=_begeniSayisi + 1;
       });
+      FirestoreServisi().gonderiBegen(widget.gonderi,_aktifKullaniciId);
 
     }
   }

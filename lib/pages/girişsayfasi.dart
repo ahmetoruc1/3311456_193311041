@@ -208,11 +208,9 @@ class _GirisSayfasiState extends State<GirisSayfasi> {
     });
     try{
       Kullanici? kullanici=await _yetkilendirmeServisi.googleIleGiris();
-      print("Anlamadımmmm");
+
       if(kullanici !=null){
-        print("Son OLSUNNNNNNNNNN");
         Kullanici? firestorekullanici=await FirestoreServisi().kullaniciGetir(kullanici.id);
-        print("Kullanıcı var");
         if(firestorekullanici ==null){
           FirestoreServisi().kullaniciOlustur(
               id: kullanici?.id,
@@ -220,7 +218,6 @@ class _GirisSayfasiState extends State<GirisSayfasi> {
               kullaniciAdi: kullanici?.kullaniciAdi,
               fotoUrl: kullanici?.fotoUrl
           );
-          print("Kullanıcı YOKKKKKKKKK");
         }
       }
     } on FirebaseAuthException catch(hata){

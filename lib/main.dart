@@ -24,10 +24,6 @@ class MyApp extends StatelessWidget {
       create: (_)=>YetkilendirmeServisi(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Projem',
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-        ),
         home: Yonlendirme(),
       ),
     );

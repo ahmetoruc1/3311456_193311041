@@ -1,5 +1,8 @@
+
+
 import 'package:enfes_lezzetler/models/gonderi.dart';
 import 'package:enfes_lezzetler/models/kullanici.dart';
+import 'package:enfes_lezzetler/pages/profiliDuzenle.dart';
 import 'package:enfes_lezzetler/services/firestoreServisi.dart';
 import 'package:enfes_lezzetler/widgetlar/gonderikarti.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +24,9 @@ class _ProfilState extends State<Profil> {
   int _takipEdilen=0;
   List<Gonderi>_gonderiler=[];
   String gonderiStili="liste";
+  late String _aktifKullaniciId;
+  late Kullanici _profilSahibi;
+  bool _takipEdildi=false;
 
   _takipciSayisiGetir()async {
     int takipciSayisi=await FirestoreServisi().takipciSayisi(widget.profilSahibi);
@@ -42,6 +48,12 @@ class _ProfilState extends State<Profil> {
       _gonderiSayisi=_gonderiler.length;
     });
   }
+  _takipKontrol()async{
+    bool takipVarMi=await FirestoreServisi().takipKontrol(aktifKullaniciId: _aktifKullaniciId, profilSahibiId: widget.profilSahibi);
+    setState(() {
+      _takipEdildi=takipVarMi;
+    });
+  }
 
   @override
   void initState() {
@@ -50,6 +62,8 @@ class _ProfilState extends State<Profil> {
     _takipciSayisiGetir();
     _takipEdilenSayisiGetir();
     _gonderileriGetir();
+    _aktifKullaniciId=Provider.of<YetkilendirmeServisi>(context,listen: false).aktifKullanici;
+    _takipKontrol();
   }
   @override
   Widget build(BuildContext context) {
@@ -62,8 +76,11 @@ class _ProfilState extends State<Profil> {
           ),),
         backgroundColor: Colors.grey[100],
         actions: [
-          IconButton(onPressed: _cikisYap, icon: Icon(Icons.exit_to_app,color: Colors.black,))
+          widget.profilSahibi==_aktifKullaniciId ?IconButton(onPressed: _cikisYap, icon: Icon(Icons.exit_to_app,color: Colors.black,)):SizedBox(height: 0.0,)
         ],
+        iconTheme: IconThemeData(
+          color: Colors.black
+        ),
       ),
       body: FutureBuilder(
           future: FirestoreServisi().kullaniciGetir(widget.profilSahibi),
@@ -72,6 +89,7 @@ class _ProfilState extends State<Profil> {
               return Center(child: CircularProgressIndicator());
 
             }
+            _profilSahibi=snapshot.data!;
             return ListView(
               children: [
                 _profilDetaylari(snapshot.data),//as Kullanici?
@@ -162,19 +180,66 @@ class _ProfilState extends State<Profil> {
           SizedBox(height: 5.0,),
           Text(profildata?.hakkinda ?? ""),
           SizedBox(height: 25.0,),
-          _profiliDuzenle()
+          widget.profilSahibi==_aktifKullaniciId ? _profiliDuzenle(): _takipButonu(),
 
         ],
       ),
     );
   }
 
+  Widget _takipButonu(){
+    return _takipEdildi?_takiptenCikButonu():_takipEtButonu();
+  }
+
+  Widget _takiptenCikButonu(){
+    return Container(
+      width: double.maxFinite,
+      child: OutlinedButton(onPressed: (){
+        FirestoreServisi().takiptenCik(aktifKullaniciId: _aktifKullaniciId, profilSahibiId: widget.profilSahibi);
+        setState(() {
+          _takipEdildi=false;
+          _takipci=_takipci-1;
+        });
+
+      }, child: Text(
+        "Takipten Çık",style: TextStyle(
+          color: Colors.black
+      ),
+      ),
+      ),
+    );
+
+  }
+
+  Widget _takipEtButonu(){
+    return Container(
+      width: double.maxFinite,
+      child: ElevatedButton(onPressed: (){
+        FirestoreServisi().takipET(aktifKullaniciId: _aktifKullaniciId,profilSahibiId: widget.profilSahibi);
+        setState(() {
+          _takipEdildi=true;
+          _takipci=_takipci+1;
+        });
+
+      }, child: Text(
+        "Takip Et",style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold
+      ),
+      ),
+      ),
+    );
+
+  }
+
   Widget _profiliDuzenle(){
     return Container(
       width: double.maxFinite,
-      child: OutlinedButton(onPressed: (){}, child: Text(
+      child: OutlinedButton(onPressed: (){
+        Navigator.push(context as BuildContext, MaterialPageRoute(builder: (context)=>ProfilDuzenle(profil: _profilSahibi,)));
+      }, child: Text(
         "Profili Düzenle",style: TextStyle(
-          color: Colors.black
+          color: Colors.black,
       ),
       ),
       ),
