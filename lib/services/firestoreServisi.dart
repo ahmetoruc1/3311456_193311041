@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enfes_lezzetler/models/gonderi.dart';
 import 'package:enfes_lezzetler/models/kullanici.dart';
 
+import '../models/duyuru.dart';
+
 class FirestoreServisi{
   final FirebaseFirestore _firestore=FirebaseFirestore.instance;
   final DateTime zaman =DateTime.now();
@@ -48,6 +50,10 @@ class FirestoreServisi{
 
 
   }
+
+
+
+
   void takipET({String? aktifKullaniciId,String? profilSahibiId}){
     _firestore.collection("takipciler").doc(profilSahibiId).collection("KullanicininTakipcileri").doc(aktifKullaniciId).set({});
     _firestore.collection("takipedilenler").doc(aktifKullaniciId).collection("KullanicininTakipleri").doc(profilSahibiId).set({});
@@ -91,6 +97,40 @@ class FirestoreServisi{
     return snapshot.docs.length;
   }
 
+
+
+
+
+
+
+   duyuruEkle({String? aktiviteYapanId,String? profilSahibiId,String? aktivitetipi,String? yorum, Gonderi? gonderi}){
+     _firestore.collection("duyurular").doc(profilSahibiId).collection("kullanicininDuyurulari").add({
+      "aktiviteYapanId":aktiviteYapanId,
+      "aktiviteTipi":aktivitetipi,
+      "gonderiId":gonderi?.id,
+      "gonderiFoto":gonderi?.gonderiResmiUrl,
+      "yorum":yorum,
+      "olusturulmaZamani":zaman
+
+    });
+  }
+  Future<List<Duyuru>>duyurulariGetir(String profilSahibiId)async{
+    //kullanıcının son 20 duyurusunun zamana göre en yeni olacak şekilde sıralanmasını sağladım.
+    QuerySnapshot snapshot=await _firestore.collection("duyurular").doc(profilSahibiId).collection("kullanicininDuyurulari").orderBy("olusturulmaZamani",descending: true).limit(20).get();
+
+    List<Duyuru> duyurular=[];
+
+    snapshot.docs.forEach((DocumentSnapshot doc) {
+      Duyuru duyuru=Duyuru.dokumandanUret(doc);
+      duyurular.add(duyuru);
+    });
+    return duyurular;
+  }
+
+
+
+
+
   Future<void>gonderiOlustur({gonderiResmiUrl,aciklama,yayinlayanId,tarif}) async {
     await _firestore.collection("gonderiler").doc(yayinlayanId).collection("KullaniciGonderileri").add({
       "gonderiResmiUrl":gonderiResmiUrl,
@@ -107,8 +147,14 @@ class FirestoreServisi{
     List<Gonderi>gonderiler=snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
     return gonderiler;
   }
+  Future<Gonderi>tekliGonderiGetir(String gonderiId,String gonderiSahibiId)async {
 
-  
+    DocumentSnapshot doc=await _firestore.collection("gonderiler").doc(gonderiSahibiId).collection("KullaniciGonderileri").doc(gonderiId).get();
+    Gonderi gonderi=Gonderi.dokumandanUret(doc);
+    return gonderi;
+
+  }
+
   Future<void>gonderiBegen(Gonderi gonderi,String aktifkullaniciId) async {
     DocumentReference docRef= _firestore.collection("gonderiler").doc(gonderi.yayinlayanId).collection("KullaniciGonderileri").doc(gonderi.id);
     DocumentSnapshot doc= await docRef.get();
@@ -123,6 +169,13 @@ class FirestoreServisi{
       _firestore.collection("begeniler").doc(gonderi.id).collection("gonderiBegenileri").doc(aktifkullaniciId).set({});
       //İşlemin tamamlanmasını beklemeyi gerektirecek bir şey olmadığından await yazılmadı.
 
+      //Beğeni haberini duyurular bölümüne ekliyorum.
+      duyuruEkle(
+        aktivitetipi: "beğeni",
+        aktiviteYapanId: aktifkullaniciId,
+        gonderi: gonderi,
+        profilSahibiId: gonderi.yayinlayanId,
+      );
     }
   }
 
@@ -143,10 +196,12 @@ class FirestoreServisi{
       if(docBegeni.exists){
         docBegeni.reference.delete();
       }
-
-
     }
   }
+
+
+
+
   Future<bool>begeniVarmi(Gonderi gonderi,String aktifkullaniciId)async{
     DocumentSnapshot docBegeni=await _firestore.collection("begeniler").doc(gonderi.id).collection("gonderiBegenileri").doc(aktifkullaniciId).get();
     if(docBegeni.exists){
