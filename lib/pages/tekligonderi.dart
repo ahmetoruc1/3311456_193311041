@@ -30,6 +30,7 @@ class _TekliGonderiState extends State<TekliGonderi> {
     Gonderi gonderi = await FirestoreServisi().tekliGonderiGetir(widget.gonderiId, widget.gonderiSAhibiId);
     if (gonderi != null) {
       Kullanici? gonderiSahibi = await FirestoreServisi().kullaniciGetir(gonderi.yayinlayanId);
+      //buraya widget.gonderi sahibiId de girilebilirdi.
       setState(() {
         _gonderi = gonderi;
         _gonderiSahibi = gonderiSahibi!;
@@ -38,19 +39,7 @@ class _TekliGonderiState extends State<TekliGonderi> {
     }
   }
 
-  /*gonderiGetir()async {
-    Gonderi gonderi =await FirestoreServisi().tekliGonderiGetir(widget.gonderiId, widget.gonderiSAhibiId);
-    if(_gonderi!=null){
-      Kullanici? gonderiSahibi=await FirestoreServisi().kullaniciGetir(gonderi.yayinlayanId);
-      //buraya widget.gonderi sahibiId de girilebilirdi.
 
-      setState(() {
-        _gonderi=gonderi;
-        _gonderiSahibi=gonderiSahibi!;
-        _yukleniyor=false;
-      });
-    }
-  }*/
 
   @override
   Widget build(BuildContext context) {

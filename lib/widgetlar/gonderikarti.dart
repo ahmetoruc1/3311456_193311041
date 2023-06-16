@@ -54,6 +54,29 @@ class _GonderiKartiState extends State<GonderiKarti> {
     );
   }
 
+  gonderiSecenekleri(){
+    showDialog(context: context,
+        builder: (context){
+        return SimpleDialog(
+          title: Text("Gönderi Sil"),
+          children: [
+            SimpleDialogOption(
+            child: Text("Gönderiyi Sil"),
+          onPressed: (){
+              FirestoreServisi().gonderiSil(aktifKullaniciId: _aktifKullaniciId,gonderi: widget.gonderi);
+              Navigator.pop(context);
+          },
+        ),
+          SimpleDialogOption(
+          child: Text("Vazgeç",style: TextStyle(color: Colors.red),),
+          onPressed: (){
+            Navigator.pop(context);
+          },)
+          ],
+        );
+      });
+  }
+
     Widget _gonderiBasligi(){
       var foto=widget.yayinlayan?.fotoUrl;
       return Padding(
@@ -66,7 +89,7 @@ class _GonderiKartiState extends State<GonderiKarti> {
             //eğer kullanıcının profil resmi yoksa CircleAvatar içersinde assetsdeki hayalet resim gösterilsin
           ),
           title: Text(widget.yayinlayan?.kullaniciAdi ?? "",style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.bold),),
-          trailing: IconButton(icon:Icon(Icons.more_vert),onPressed: null,),
+          trailing: _aktifKullaniciId==widget.gonderi.yayinlayanId ? IconButton(icon:Icon(Icons.more_vert),onPressed: gonderiSecenekleri,):null,
           contentPadding: EdgeInsets.all(0.0), //listitle ın default paddingini kapattım
 
 

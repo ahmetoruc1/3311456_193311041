@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enfes_lezzetler/models/gonderi.dart';
 import 'package:enfes_lezzetler/models/kullanici.dart';
+import 'package:enfes_lezzetler/services/storageServisi.dart';
 
 import '../models/duyuru.dart';
 
@@ -58,6 +59,12 @@ class FirestoreServisi{
     _firestore.collection("takipciler").doc(profilSahibiId).collection("KullanicininTakipcileri").doc(aktifKullaniciId).set({});
     _firestore.collection("takipedilenler").doc(aktifKullaniciId).collection("KullanicininTakipleri").doc(profilSahibiId).set({});
 
+    //takip etmeyi duyurularla bildirme
+    duyuruEkle(
+      aktivitetipi: "takip",
+      aktiviteYapanId: aktifKullaniciId,
+      profilSahibiId: profilSahibiId,
+    );
   }
   void takiptenCik({String? aktifKullaniciId,String? profilSahibiId}){
     //profil sahibinin  takipçiler koleksiyonundan dokümanın silinmesi
@@ -103,7 +110,12 @@ class FirestoreServisi{
 
 
 
-   duyuruEkle({String? aktiviteYapanId,String? profilSahibiId,String? aktivitetipi,String? yorum, Gonderi? gonderi}){
+   void duyuruEkle({String? aktiviteYapanId,String? profilSahibiId,String? aktivitetipi,String? yorum, Gonderi? gonderi}){
+    if(aktiviteYapanId==profilSahibiId){
+      return;
+      //kendi hesabımızda yaptığımız aktiviteleri duyuru sayfasında göstermemek için kullandım.
+    }
+
      _firestore.collection("duyurular").doc(profilSahibiId).collection("kullanicininDuyurulari").add({
       "aktiviteYapanId":aktiviteYapanId,
       "aktiviteTipi":aktivitetipi,
@@ -147,6 +159,31 @@ class FirestoreServisi{
     List<Gonderi>gonderiler=snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
     return gonderiler;
   }
+  Future<void>gonderiSil({String? aktifKullaniciId,Gonderi? gonderi})async{
+    _firestore.collection("gonderiler").doc(aktifKullaniciId).collection("KullaniciGonderileri").doc(gonderi?.id).get().then((DocumentSnapshot doc) => {
+      if(doc.exists){
+        doc.reference.delete()
+      }
+    });
+
+    //Gonderiye ait Yorumların silinmesi
+    QuerySnapshot yorumSnapshot=await _firestore.collection("yorumlar").doc(gonderi?.id).collection("gonderiYorumlari").get();
+    yorumSnapshot.docs.forEach((DocumentSnapshot doc) {
+      if(doc.exists){
+        doc.reference.delete();
+      }
+    });
+    //Silinen Gönderiye Ait duyuruların silinmesi
+    QuerySnapshot duyuruSnapshot=await _firestore.collection("duyurular").doc(gonderi?.yayinlayanId).collection("kullanicininDuyurulari").where("gonderiId",isEqualTo: gonderi?.id).get();
+    duyuruSnapshot.docs.forEach((DocumentSnapshot doc) {
+      if(doc.exists){
+        doc.reference.delete();
+      }
+    });
+
+    //Silinen gonderinin Storage dan silinmesi
+    StorageServisi().gonderiResmiSil(gonderi!.gonderiResmiUrl);
+  }
   Future<Gonderi>tekliGonderiGetir(String gonderiId,String gonderiSahibiId)async {
 
     DocumentSnapshot doc=await _firestore.collection("gonderiler").doc(gonderiSahibiId).collection("KullaniciGonderileri").doc(gonderiId).get();
@@ -154,7 +191,6 @@ class FirestoreServisi{
     return gonderi;
 
   }
-
   Future<void>gonderiBegen(Gonderi gonderi,String aktifkullaniciId) async {
     DocumentReference docRef= _firestore.collection("gonderiler").doc(gonderi.yayinlayanId).collection("KullaniciGonderileri").doc(gonderi.id);
     DocumentSnapshot doc= await docRef.get();
@@ -178,7 +214,6 @@ class FirestoreServisi{
       );
     }
   }
-
   Future<void>gonderiBegeniKaldir(Gonderi gonderi,String aktifkullaniciId) async {
     DocumentReference docRef = _firestore.collection("gonderiler").doc(
         gonderi.yayinlayanId).collection("KullaniciGonderileri").doc(
@@ -224,7 +259,16 @@ class FirestoreServisi{
     });
     //add() metodu future nesnesi döndürmesine rağmen await, future eklemedim çünkü programın bir yorum ekleme işlemini beklemem gerekmiyor
     //program arka planda onları hallediyor
-    
+
+    //Yorum yapıldığını duyurular sayfasına iletiyorum.
+
+    duyuruEkle(
+        aktivitetipi:"yorum",
+      aktiviteYapanId: aktifKullaniciId,
+      gonderi: gonderi,
+      profilSahibiId: gonderi.yayinlayanId,
+      yorum: icerik
+    );
   }
 
 }

@@ -4,8 +4,8 @@ class Duyuru{
   final String id;
   final String aktiviteYapanId;
   final String aktiviteTipi;
-  final String gonderiId;
-  final String gonderiFoto;
+  final String? gonderiId;
+  final String? gonderiFoto;
   final String? yorum;
   final Timestamp olusturulmaZamani;
 

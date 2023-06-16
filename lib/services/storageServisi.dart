@@ -25,5 +25,14 @@ class StorageServisi{
     return yuklenenResimUrl;
 
   }
+  gonderiResmiSil(String gonderiResmiUrl){
+     RegExp arama=RegExp(r"gonderi_.+\.jpg");
+     //gonderi_ ile storage a kaydettiğim belgedenin 36 adet herhangi bir ifade aldıktan sonra .jpg ile biten bölümünü elde ettim.
+    var eslesme=arama.firstMatch(gonderiResmiUrl);
+    String? dosyaAdi=eslesme![0];
+    if(dosyaAdi!=null){
+      _storage.child("resimler/gonderiler/$dosyaAdi").delete();
+    }
+  }
 
 }
