@@ -110,13 +110,13 @@ class FirestoreServisi{
 
 
 
-   void duyuruEkle({String? aktiviteYapanId,String? profilSahibiId,String? aktivitetipi,String? yorum, Gonderi? gonderi}){
+  void duyuruEkle({String? aktiviteYapanId,String? profilSahibiId,String? aktivitetipi,String? yorum, Gonderi? gonderi}){
     if(aktiviteYapanId==profilSahibiId){
       return;
       //kendi hesabımızda yaptığımız aktiviteleri duyuru sayfasında göstermemek için kullandım.
     }
 
-     _firestore.collection("duyurular").doc(profilSahibiId).collection("kullanicininDuyurulari").add({
+    _firestore.collection("duyurular").doc(profilSahibiId).collection("kullanicininDuyurulari").add({
       "aktiviteYapanId":aktiviteYapanId,
       "aktiviteTipi":aktivitetipi,
       "gonderiId":gonderi?.id,
@@ -152,6 +152,13 @@ class FirestoreServisi{
       "begeniSayisi":0,
       "oluşturulmaZamanı":zaman
     });
+  }
+
+  Future<List<Gonderi>>akisGonderileriniGetir(kullaniciId)async {
+    QuerySnapshot snapshot =await _firestore.collection("akislar").doc(kullaniciId).collection("kullaniciAkisGonderileri").orderBy("oluşturulmaZamanı",descending: true).get();
+    //en son yüklenen gönderinin ilk başta gelmesi için olduşturma zamanının azlamasına bağlı olarak listelenmesini sağladım.
+    List<Gonderi>gonderiler=snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
+    return gonderiler;
   }
   Future<List<Gonderi>>gonderiGetir(kullaniciId)async {
     QuerySnapshot snapshot =await _firestore.collection("gonderiler").doc(kullaniciId).collection("KullaniciGonderileri").orderBy("oluşturulmaZamanı",descending: true).get();
@@ -198,7 +205,7 @@ class FirestoreServisi{
     if(doc.exists){
       Gonderi gonderi=Gonderi.dokumandanUret(doc);
       int yenibegeniSayisi=gonderi.begeniSayisi+1;
-       docRef.update({
+      docRef.update({
         "begeniSayisi":yenibegeniSayisi
       });
       //Begenilen gönderi, begeniler koleksiyonuna eklenir
@@ -264,10 +271,10 @@ class FirestoreServisi{
 
     duyuruEkle(
         aktivitetipi:"yorum",
-      aktiviteYapanId: aktifKullaniciId,
-      gonderi: gonderi,
-      profilSahibiId: gonderi.yayinlayanId,
-      yorum: icerik
+        aktiviteYapanId: aktifKullaniciId,
+        gonderi: gonderi,
+        profilSahibiId: gonderi.yayinlayanId,
+        yorum: icerik
     );
   }
 
