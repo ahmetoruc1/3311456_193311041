@@ -1,4 +1,5 @@
 import 'package:enfes_lezzetler/models/kullanici.dart';
+import 'package:enfes_lezzetler/pages/tarifEkle.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -56,6 +57,14 @@ class _AkisState extends State<Akis> {
                   return GonderiKarti(gonderi: gonderi,yayinlayan: gonderiSahibi,);
                 });
           }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TarifEkle()));
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }

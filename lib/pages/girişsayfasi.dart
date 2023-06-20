@@ -3,6 +3,7 @@
 import 'package:enfes_lezzetler/models/kullanici.dart';
 import 'package:enfes_lezzetler/pages/hesapOlustur.dart';
 import 'package:enfes_lezzetler/pages/sifremiUnuttum.dart';
+import 'package:enfes_lezzetler/pages/uygulamaNedir.dart';
 import 'package:enfes_lezzetler/services/firestoreServisi.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -173,12 +174,18 @@ class _GirisSayfasiState extends State<GirisSayfasi> {
               ),
             ),
           ),
-          SizedBox(height: 20.0),
+          SizedBox(height: 15.0),
           Center(child: InkWell(
               onTap: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>SifremiUnuttum()));
               },
               child: Text("Şifremi Unuttum"))),
+          SizedBox(height: 10.0),
+          Center(child: InkWell(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>UygulamaNedir()));
+              },
+              child: Text("Nedir Bu Uygulama ?"))),
 
         ],
       ),
