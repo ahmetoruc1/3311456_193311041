@@ -71,24 +71,22 @@ exports.gonderiGuncellendi = functions.firestore.document('gonderiler/{takipEdil
     });
 });
 
-
-
-/*
-exports.yeniGonderiEklendi = functions.firestore.document('gonderiler/{takipEdilenKullaniciId}/KullaniciGonderileri/{gonderiId}').onCreate(async (snapshot, context) => {
+exports.gonderiSilindi = functions.firestore.document('gonderiler/{takipEdilenKullaniciId}/KullaniciGonderileri/{gonderiId}').onDelete(async (snapshot, context) => {
     const takipEdilenId = context.params.takipEdilenKullaniciId;
-    const gonderiID = context.params.gonderiId;
-    const yeniGonderiData=snapshot.data();
+    const gonderiId = context.params.gonderiId;
 
-    const takipcilerSnapshot = await admin.firestore().collection("takipciler").doc(takipEdilenId).collection("KullanıcınınTakipcileri").get();
+    const takipcilerSnapshot = await admin.firestore().collection("takipciler").doc(takipEdilenId).collection("KullanicininTakipcileri").get();
 
-   takipcilerSnapshot.forEach((doc)=>{
-   const takipciId=doc.id;
+    takipcilerSnapshot.forEach(doc=>{
+        const takipciId = doc.id;
+        admin.firestore().collection("akislar").doc(takipciId).collection("kullaniciAkisGonderileri").doc(gonderiId).delete();
 
-   admin.firestore().collection("akislar").doc(takipciId).collection("kullaniciAkisGonderileri").doc(gonderiId).set(yeniGonderiData);
-   });
-
+    });
 });
-*/
+
+
+
+
 
 
 

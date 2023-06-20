@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/gonderi.dart';
+import '../pages/profil.dart';
 
 class GonderiKarti extends StatefulWidget {
   final Gonderi gonderi;
@@ -77,23 +78,33 @@ class _GonderiKartiState extends State<GonderiKarti> {
       });
   }
 
-    Widget _gonderiBasligi(){
+     _gonderiBasligi() {
       var foto=widget.yayinlayan?.fotoUrl;
-      return Padding(
-        padding: const EdgeInsets.only(left: 12.0),
-        child: ListTile(
-          leading: CircleAvatar(
+      return ListTile(
+        leading:Padding(
+          padding: EdgeInsets.only(left: 12.0),
+          child: GestureDetector(
+            onTap:  (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> Profil(profilSahibi: widget.gonderi.yayinlayanId)));
+            },
+            child: CircleAvatar(
 
-            backgroundColor: Colors.blue,
-            backgroundImage: widget.yayinlayan?.fotoUrl?.isNotEmpty ?? false ? NetworkImage(widget.yayinlayan?.fotoUrl ?? ""): Image.asset("assets/images/hayaletProfilFotosu.png") .image,
-            //eğer kullanıcının profil resmi yoksa CircleAvatar içersinde assetsdeki hayalet resim gösterilsin
+              backgroundColor: Colors.blue,
+              backgroundImage: widget.yayinlayan?.fotoUrl?.isNotEmpty ?? false ? NetworkImage(widget.yayinlayan?.fotoUrl ?? ""): Image.asset("assets/images/hayaletProfilFotosu.png") .image,
+              //eğer kullanıcının profil resmi yoksa CircleAvatar içersinde assetsdeki hayalet resim gösterilsin
+            ),
           ),
-          title: Text(widget.yayinlayan?.kullaniciAdi ?? "",style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.bold),),
-          trailing: _aktifKullaniciId==widget.gonderi.yayinlayanId ? IconButton(icon:Icon(Icons.more_vert),onPressed: gonderiSecenekleri,):null,
-          contentPadding: EdgeInsets.all(0.0), //listitle ın default paddingini kapattım
-
-
         ),
+
+        title: GestureDetector(
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> Profil(profilSahibi: widget.gonderi.yayinlayanId)));
+            },
+            child: Text(widget.yayinlayan?.kullaniciAdi ?? "",style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.bold),)),
+        trailing: _aktifKullaniciId==widget.gonderi.yayinlayanId ? IconButton(icon:Icon(Icons.more_vert),onPressed: gonderiSecenekleri,):null,
+        contentPadding: EdgeInsets.all(0.0), //listitle ın default paddingini kapattım
+
+
       );
       
     }

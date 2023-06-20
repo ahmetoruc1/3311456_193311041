@@ -166,7 +166,7 @@ class FirestoreServisi{
     List<Gonderi>gonderiler=snapshot.docs.map((doc) => Gonderi.dokumandanUret(doc)).toList();
     return gonderiler;
   }
-  Future<void>gonderiSil({String? aktifKullaniciId,Gonderi? gonderi})async{
+  Future<void>gonderiSil({String? aktifKullaniciId,required Gonderi gonderi})async{
     _firestore.collection("gonderiler").doc(aktifKullaniciId).collection("KullaniciGonderileri").doc(gonderi?.id).get().then((DocumentSnapshot doc) => {
       if(doc.exists){
         doc.reference.delete()
@@ -174,14 +174,14 @@ class FirestoreServisi{
     });
 
     //Gonderiye ait Yorumların silinmesi
-    QuerySnapshot yorumSnapshot=await _firestore.collection("yorumlar").doc(gonderi?.id).collection("gonderiYorumlari").get();
+    QuerySnapshot yorumSnapshot=await _firestore.collection("yorumlar").doc(gonderi.id).collection("gonderiYorumlari").get();
     yorumSnapshot.docs.forEach((DocumentSnapshot doc) {
       if(doc.exists){
         doc.reference.delete();
       }
     });
     //Silinen Gönderiye Ait duyuruların silinmesi
-    QuerySnapshot duyuruSnapshot=await _firestore.collection("duyurular").doc(gonderi?.yayinlayanId).collection("kullanicininDuyurulari").where("gonderiId",isEqualTo: gonderi?.id).get();
+    QuerySnapshot duyuruSnapshot=await _firestore.collection("duyurular").doc(gonderi.yayinlayanId).collection("kullanicininDuyurulari").where("gonderiId",isEqualTo: gonderi?.id).get();
     duyuruSnapshot.docs.forEach((DocumentSnapshot doc) {
       if(doc.exists){
         doc.reference.delete();
@@ -189,7 +189,7 @@ class FirestoreServisi{
     });
 
     //Silinen gonderinin Storage dan silinmesi
-    StorageServisi().gonderiResmiSil(gonderi!.gonderiResmiUrl);
+    StorageServisi().gonderiResmiSil(gonderi.gonderiResmiUrl);
   }
   Future<Gonderi>tekliGonderiGetir(String gonderiId,String gonderiSahibiId)async {
 

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 
@@ -10,7 +11,7 @@ class StorageServisi{
 
    Future<String>gonderiResmiYukle(File resimDosyasi) async {
      resimId=Uuid().v4();
-     UploadTask yuklemeYoneticisi=_storage.child("resimler/gonderiler/gönderi_$resimId.jpg").putFile(resimDosyasi);
+     UploadTask yuklemeYoneticisi=_storage.child("resimler/gonderiler/gonderi_$resimId.jpg").putFile(resimDosyasi);
      TaskSnapshot snapshot=await yuklemeYoneticisi;
      String yuklenenResimUrl=await snapshot.ref.getDownloadURL();
      return yuklenenResimUrl;
@@ -25,14 +26,22 @@ class StorageServisi{
     return yuklenenResimUrl;
 
   }
-  gonderiResmiSil(String gonderiResmiUrl){
-     RegExp arama=RegExp(r"gonderi_.+\.jpg");
-     //gonderi_ ile storage a kaydettiğim belgedenin 36 adet herhangi bir ifade aldıktan sonra .jpg ile biten bölümünü elde ettim.
-    var eslesme=arama.firstMatch(gonderiResmiUrl);
-    String? dosyaAdi=eslesme![0];
-    if(dosyaAdi!=null){
-      _storage.child("resimler/gonderiler/$dosyaAdi").delete();
+
+
+  Future<void> gonderiResmiSil(String gonderiResmiUrl) async {
+    RegExp arama = RegExp(r'gonderi_.+\.jpg');
+    var eslesme = arama.firstMatch(gonderiResmiUrl);
+    String? dosyaAdi = eslesme?.group(0);
+
+    if (dosyaAdi != null) {
+      try {
+        await FirebaseStorage.instance.ref('resimler/gonderiler/$dosyaAdi').delete();
+        print('Dosya başarıyla silindi.');
+      } catch (e) {
+        print('Dosya silinirken bir hata oluştu: $e');
+      }
     }
   }
+
 
 }
