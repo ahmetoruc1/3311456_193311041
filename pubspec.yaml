@@ -49,6 +49,8 @@ dependencies:
   firebase_storage: ^11.2.2
   uuid: ^3.0.6
   timeago: ^3.4.0
+  firebase_storage_web: ^3.6.3
+  image_picker_web: ^3.0.0+1
 
 
 

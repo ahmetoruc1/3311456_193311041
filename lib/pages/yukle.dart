@@ -1,4 +1,4 @@
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 
 import 'package:enfes_lezzetler/services/firestoreServisi.dart';
@@ -41,7 +41,12 @@ class _YukleState extends State<Yukle> {
   }
 
   Widget yukleButonu(){
-    return IconButton(onPressed: (){fotografSec();}, icon: Icon(Icons.file_upload,size: 50.0,));
+    return IconButton(onPressed: (){if (kIsWeb) {
+      // running on the web!
+    } else {
+      fotografSec();
+      // NOT running on the web! You can check for additional platforms here.
+    }}, icon: Icon(Icons.file_upload,size: 50.0,));
 
   }
   
