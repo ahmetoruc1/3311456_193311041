@@ -167,7 +167,7 @@ class FirestoreServisi{
     return gonderiler;
   }
   Future<void>gonderiSil({String? aktifKullaniciId,required Gonderi gonderi})async{
-    _firestore.collection("gonderiler").doc(aktifKullaniciId).collection("KullaniciGonderileri").doc(gonderi?.id).get().then((DocumentSnapshot doc) => {
+    _firestore.collection("gonderiler").doc(aktifKullaniciId).collection("KullaniciGonderileri").doc(gonderi.id).get().then((DocumentSnapshot doc) => {
       if(doc.exists){
         doc.reference.delete()
       }
@@ -181,7 +181,7 @@ class FirestoreServisi{
       }
     });
     //Silinen Gönderiye Ait duyuruların silinmesi
-    QuerySnapshot duyuruSnapshot=await _firestore.collection("duyurular").doc(gonderi.yayinlayanId).collection("kullanicininDuyurulari").where("gonderiId",isEqualTo: gonderi?.id).get();
+    QuerySnapshot duyuruSnapshot=await _firestore.collection("duyurular").doc(gonderi.yayinlayanId).collection("kullanicininDuyurulari").where("gonderiId",isEqualTo: gonderi.id).get();
     duyuruSnapshot.docs.forEach((DocumentSnapshot doc) {
       if(doc.exists){
         doc.reference.delete();

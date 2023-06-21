@@ -90,7 +90,7 @@ class _GonderiKartiState extends State<GonderiKarti> {
             child: CircleAvatar(
 
               backgroundColor: Colors.blue,
-              backgroundImage: widget.yayinlayan?.fotoUrl?.isNotEmpty ?? false ? NetworkImage(widget.yayinlayan?.fotoUrl ?? ""): Image.asset("assets/images/hayaletProfilFotosu.png") .image,
+              backgroundImage: widget.yayinlayan?.fotoUrl.isNotEmpty ?? false ? NetworkImage(widget.yayinlayan?.fotoUrl ?? ""): Image.asset("assets/images/hayaletProfilFotosu.png") .image,
               //eğer kullanıcının profil resmi yoksa CircleAvatar içersinde assetsdeki hayalet resim gösterilsin
             ),
           ),

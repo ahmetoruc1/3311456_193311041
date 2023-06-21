@@ -225,10 +225,10 @@ class _GirisSayfasiState extends State<GirisSayfasi> {
         Kullanici? firestorekullanici=await FirestoreServisi().kullaniciGetir(kullanici.id);
         if(firestorekullanici ==null){
           FirestoreServisi().kullaniciOlustur(
-              id: kullanici?.id,
-              email: kullanici?.email,
-              kullaniciAdi: kullanici?.kullaniciAdi,
-              fotoUrl: kullanici?.fotoUrl
+              id: kullanici.id,
+              email: kullanici.email,
+              kullaniciAdi: kullanici.kullaniciAdi,
+              fotoUrl: kullanici.fotoUrl
           );
         }
       }

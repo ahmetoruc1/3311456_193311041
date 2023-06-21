@@ -11,7 +11,7 @@ class FileUtils {
 
   static Future<File> get getFile async {
     final path = await getFilePath;
-    return File("$path/myfile. txt");
+    return File("$path/dosya. txt");
   }
 
   static Future<File> saveToFile(String data) async {
@@ -26,7 +26,7 @@ class FileUtils {
       return fileContents;
     }
     catch (e) {
-      return "";
+      return "hata";
     }
   }
 }

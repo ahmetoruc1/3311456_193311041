@@ -89,7 +89,7 @@ class _YorumlarState extends State<Yorumlar> {
         return ListTile(
           leading: CircleAvatar(
             backgroundColor: Colors.grey,
-            backgroundImage: yayinlayan?.fotoUrl?.isNotEmpty ?? false ? NetworkImage(yayinlayan?.fotoUrl ?? ""): Image.asset("assets/images/hayaletProfilFotosu.png") .image,
+            backgroundImage: yayinlayan?.fotoUrl.isNotEmpty ?? false ? NetworkImage(yayinlayan?.fotoUrl ?? ""): Image.asset("assets/images/hayaletProfilFotosu.png") .image,
           ),
           title: RichText(
               text: TextSpan(
